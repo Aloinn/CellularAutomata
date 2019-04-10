@@ -9,7 +9,7 @@ function click(){
   for(var i = 0; i < 10; i++){
     CA.stepCA();
   }
-  console.log(CA.countMass(12,12,1));
+  CA.countLands();
   render();
 }
 
@@ -119,6 +119,74 @@ var CA = {
       count +=1;
     }
     return count;
+  },
+
+  // FINDS ALL INDIVIDUAL ISLANDS
+  countLands(){
+    // COUNT NUMBER TO GO
+    var count = 0;
+    var masses = {};
+    var toCheck = [];
+    // CREATE FLOODMAP
+    var countMap = [];
+    for(var x = 0; x < width; x++){
+        countMap[x] = [];
+        for(var y = 0; y < height; y++){
+            countMap[x][y] = 0;
+        }
+    }
+
+    copyMap(countMap, this.map);
+
+    // CHECKS IF A TILE IS ADJACENT TO SAID TILE AND ADDS IT TO THE LIST
+    function check(coords,type){
+      var x = coords[0];
+      var y = coords[1];
+      if(x!=width-1){
+        if(countMap[x+1][y]===type)
+        {toCheck.push([x+1,y]); countMap[x+1][y]=2;}
+      }
+      if(x!= 0){
+        if(countMap[x-1][y]===type)
+      {toCheck.push([x-1,y]); countMap[x-1][y]=2;}
+      }
+      if(y!=height-1){
+        if(countMap[x][y+1]===type)
+        {toCheck.push([x,y+1]); countMap[x][y+1]=2;}
+      }
+      if(y!=0){
+        if(countMap[x][y-1]===type)
+        {toCheck.push([x,y-1]); countMap[x][y-1]=2;}
+      }
+    }
+
+    // COUNT HOW MANY TILES ARE CONNECTED TO THE COORDS
+    function countMass(type){
+      var num = -1;
+      while(toCheck.length != 0){
+        check(toCheck.pop(),type);
+        num +=1;
+      } return num;
+    }
+
+    // ITERATES THROUGH THE COUNTING MAP
+    for(var x = 0; x < width; x++){
+        for(var y = 0; y < height; y++){
+            if(countMap[x][y]!==2){
+              var type = countMap[x][y];
+              var name = (type == 1?'lakes':'island') +"-"+ count.toString();
+
+              masses[name] = new Object();
+
+              toCheck.push([x,y]);
+              masses[name].origin = [x,y];
+              masses[name].count = Math.max(countMass(type),1);
+
+              count +=1;
+            }
+        }
+    }
+    console.table(masses);
   },
   // DRAW INDIVIDUAL SQUARE BASED ON RADIUS AND COORDINATES
   draw(x,y){
