@@ -10,6 +10,7 @@ function click(){
     CA.stepCA();
   }
   CA.countLands();
+  CA.correct(CA.masses);
   render();
 }
 
@@ -174,20 +175,69 @@ var CA = {
         for(var y = 0; y < height; y++){
             if(countMap[x][y]!==2){
               var type = countMap[x][y];
-              var name = (type == 1?'lakes':'island') +"-"+ count.toString();
+              var name = (type === 1?'lake':'island') +"-"+ count.toString();
 
               masses[name] = new Object();
 
               toCheck.push([x,y]);
               masses[name].origin = [x,y];
               masses[name].count = Math.max(countMass(type),1);
-
+              masses[name].type = (type === 1?'lake':'island');
               count +=1;
             }
         }
     }
-    console.table(masses);
+    this.masses = masses;
   },
+
+  // FILL IN SMALL BODIES
+  correct(masses){
+    console.table(masses);
+    var count = Object.keys(masses).length;
+    for(var mass in masses){
+      if(masses[mass].type === 'lake' && masses[mass].count < 20)
+      {this.floodFill(masses[mass].origin); console.log('fill!')}
+    }
+  },
+
+  // FILL IN A WATER BODY WITH LAND
+  floodFill(coords){
+    var xx = coords[0];
+    var yy = coords[1];
+
+    var toCheck = [];
+    toCheck.push([xx,yy])
+    // CREATE FLOODMAP
+
+    function check(map,coords){
+      var x = coords[0];
+      var y = coords[1];
+
+      if(map[x][y]===1)
+      {map[x][y]=0;}
+
+      if(x!=width-1){
+        if(map[x+1][y]===1)
+        {toCheck.push([x+1,y]); map[x+1][y]=0;}
+      }
+      if(x!= 0){
+        if(map[x-1][y]===1)
+      {toCheck.push([x-1,y]); map[x-1][y]=0;}
+      }
+      if(y!=height-1){
+        if(map[x][y+1]===1)
+        {toCheck.push([x,y+1]); map[x][y+1]=0;}
+      }
+      if(y!=0){
+        if(map[x][y-1]===1)
+        {toCheck.push([x,y-1]); map[x][y-1]=2;}
+      }
+    }
+    while(toCheck.length != 0){
+      check(this.map,toCheck.pop())
+    }
+  },
+
   // DRAW INDIVIDUAL SQUARE BASED ON RADIUS AND COORDINATES
   draw(x,y){
     if(this.map[x][y]===1)
