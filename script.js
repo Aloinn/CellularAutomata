@@ -4,83 +4,99 @@ var ctx = canvas.getContext("2d");
 document.addEventListener("click",click);
 
 function click(){
-  stepCA();
-  //console.table(newmap)
-  updateCA();
+  CA.newCA();
+  CA.beginCA();
+  for(var i = 0; i < 10; i++){
+    CA.stepCA();
+    CA.updateCA();
+  }
   render();
 }
 
 // BASE STATS
-var radius = 8;
-var height = 50;
-var width = 50;
+var radius = 16;
+var height = 25;
+var width = 25;
 
-// RANDOM STATS
-var birth = 5; // 1 in how many chance to be born
-var birthLimit = 2; // neighbours required to live
-var deathLimit = 1; // neighbours required to be reborn
-function random(int){
-  return(Math.floor((Math.random() * (int+1))));
-}
-// CREATE MAP
-var map = [];
-for(var x = 0; x < width; x++){
-    map[x] = [];
-    for(var y = 0; y < height; y++){
-        map[x][y] = 0;
+var CA = {
+  // RANDOM STATS
+  birth:4, // 1 in how many chance to be born
+  birthLimit:4, // neighbours required to live
+  deathLimit:3, // neighbours required to be reborn
+  // MAP
+  map:[],
+  newmap:[],
+  // CREATE MAP
+  newCA(){
+    // CREATE MAP
+    for(var x = 0; x < width; x++){
+        this.map[x] = [];
+        for(var y = 0; y < height; y++){
+            this.map[x][y] = 0;
+        }
     }
-}
-var newmap = [];
-for(var x = 0; x < width; x++){
-    newmap[x] = [];
-    for(var y = 0; y < height; y++){
-        newmap[x][y] = 0;
+    // CREATE NEW MAP
+    for(var x = 0; x < width; x++){
+        this.newmap[x] = [];
+        for(var y = 0; y < height; y++){
+            this.newmap[x][y] = 0;
+        }
     }
-}
+  },
 
-// BEGIN CELLULAR AUTOMATA
-function beginCA(){
-  for(var x = 0; x < width; x++){
-    for(var y = 0; y < height; y++){
-      random(10)<birth ? map[x][y] = 1 : map[x][y] = 0;
-    }
-  }
-}
-
-// RUN CELLULAR AUTOMATA CYCLE
-function stepCA(){
-  for(var x = 0; x < width; x++){
-    for(var y = 0; y < height; y++){
-      var nbs = countNeighbours(x,y)
-      console.log(nbs);
-
-      // IF ALIVE WITH TOO FEW NEIGHBOURS, THEN KILL CELL
-      if(map[x][y] === 1){
-        if(nbs < deathLimit)
-        {newmap[x][y] = 0;}
-        else
-        {newmap[x][y] = 1;}
-      } else { // IF CELL IS DEAD AND HAS ENOUGH NEIGHBOURS TO RESPAWN
-        if(nbs > birthLimit)
-        {newmap[x][y] = 1;}
-        else
-        {newmap[x][y] = 0;}
+  // BEGIN CELLULAR AUTOMATA
+  beginCA(){
+    for(var x = 0; x < width; x++){
+      for(var y = 0; y < height; y++){
+        random(10)<this.birth ? this.map[x][y] = 1 : this.map[x][y] = 0;
       }
     }
-  }
-}
+  },
 
-// UPDATE THE MAP
-function updateCA(){
-  for(var x = 0; x < width; x++){
-    for(var y = 0; y < height; y++){
-      map[x][y] = newmap[x][y]
+  // RUN CELLULAR AUTOMATA CYCLE
+  stepCA(){
+    for(var x = 0; x < width; x++){
+      for(var y = 0; y < height; y++){
+        var nbs = countNeighbours(this.map,x,y)
+        console.log(nbs);
+
+        // IF ALIVE WITH TOO FEW NEIGHBOURS, THEN KILL CELL
+        if(this.map[x][y] === 1){
+          if(nbs < this.deathLimit)
+          {this.newmap[x][y] = 0;}
+          else
+          {this.newmap[x][y] = 1;}
+        } else { // IF CELL IS DEAD AND HAS ENOUGH NEIGHBOURS TO RESPAWN
+          if(nbs > this.birthLimit)
+          {this.newmap[x][y] = 1;}
+          else
+          {this.newmap[x][y] = 0;}
+        }
+      }
     }
-  }
+  },
+
+  // UPDATE CELLULAR AUTOMATA MAP
+  updateCA(){
+    for(var x = 0; x < width; x++){
+      for(var y = 0; y < height; y++){
+        this.map[x][y] = this.newmap[x][y]
+      }
+    }
+  },
+
+  // DRAW INDIVIDUAL SQUARE BASED ON RADIUS AND COORDINATES
+  draw(x,y){
+    if(this.map[x][y]===1)
+    {ctx.fillStyle = 'dodgerBlue';}
+    else if (this.map[x][y] === 0)
+    {ctx.fillStyle = 'limegreen';}
+    ctx.fillRect(x*radius, y*radius,  radius-1, radius-1);
+  },
 }
 
 // function to count neighbours of a coordinate
-function countNeighbours(x,y){
+function countNeighbours(map,x,y){
   // COUNTS HOW MANY NEIGHBOURS
   var count = 0;
   for(var xx = -1; xx < 2; xx +=1){
@@ -109,20 +125,17 @@ function countNeighbours(x,y){
 function render(){
   for(var x = 0; x < width; x++){
       for(var y = 0; y < height; y++){
-          draw(x,y)
+          CA.draw(x,y)
       }
   }
 }
 
-// DRAW INDIVIDUAL SQUARE BASED ON RADIUS AND COORDINATES
-function draw(x,y){
-  if(map[x][y]===1)
-  {ctx.fillStyle = 'dodgerBlue';}
-  else if (map[x][y] === 0)
-  {ctx.fillStyle = '#efefef';}
-  ctx.fillRect(x*radius, y*radius,  radius-1, radius-1);
+// RETURNS RANDOM INT
+function random(int){
+  return(Math.floor((Math.random() * (int+1))));
 }
 
 // MAIN CODE
-beginCA();
+CA.newCA();
+CA.beginCA();
 render();
