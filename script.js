@@ -8,8 +8,8 @@ function click(){
   CA.beginCA();
   for(var i = 0; i < 10; i++){
     CA.stepCA();
-    CA.updateCA();
   }
+  console.log(CA.countMass(12,12,1));
   render();
 }
 
@@ -58,7 +58,6 @@ var CA = {
     for(var x = 0; x < width; x++){
       for(var y = 0; y < height; y++){
         var nbs = countNeighbours(this.map,x,y)
-        console.log(nbs);
 
         // IF ALIVE WITH TOO FEW NEIGHBOURS, THEN KILL CELL
         if(this.map[x][y] === 1){
@@ -74,17 +73,53 @@ var CA = {
         }
       }
     }
+    copyMap(this.map, this.newmap);
   },
 
-  // UPDATE CELLULAR AUTOMATA MAP
-  updateCA(){
+  // FLOOR FILL ALL ACTIVE SQUARES
+  countMass(x,y,type){
+    // COUNT NUMBER TO GO
+    var count = -1;
+    var toCheck = [];
+    toCheck.push([x,y])
+    // CREATE FLOODMAP
+    var floodMap = [];
     for(var x = 0; x < width; x++){
-      for(var y = 0; y < height; y++){
-        this.map[x][y] = this.newmap[x][y]
+        floodMap[x] = [];
+        for(var y = 0; y < height; y++){
+            floodMap[x][y] = 0;
+        }
+    }
+
+    copyMap(floodMap, this.map);
+
+    function check(coords){
+      var x = coords[0];
+      var y = coords[1];
+      if(x!=width-1){
+        if(floodMap[x+1][y]===type)
+        {toCheck.push([x+1,y]); floodMap[x+1][y]=2;}
+      }
+      if(x!= 0){
+        if(floodMap[x-1][y]===type)
+      {toCheck.push([x-1,y]); floodMap[x-1][y]=2;}
+      }
+      if(y!=height-1){
+        if(floodMap[x][y+1]===type)
+        {toCheck.push([x,y+1]); floodMap[x][y+1]=2;}
+      }
+      if(y!=0){
+        if(floodMap[x][y-1]===type)
+        {toCheck.push([x,y-1]); floodMap[x][y-1]=2;}
       }
     }
-  },
 
+    while(toCheck.length != 0){
+      check(toCheck.pop())
+      count +=1;
+    }
+    return count;
+  },
   // DRAW INDIVIDUAL SQUARE BASED ON RADIUS AND COORDINATES
   draw(x,y){
     if(this.map[x][y]===1)
@@ -133,6 +168,15 @@ function render(){
 // RETURNS RANDOM INT
 function random(int){
   return(Math.floor((Math.random() * (int+1))));
+}
+
+// COPY MAP 1 TO MAP 2
+function copyMap(map1, map2){
+  for(var x = 0; x < width; x++){
+    for(var y = 0; y < height; y++){
+      map1[x][y] = map2[x][y];
+    }
+  }
 }
 
 // MAIN CODE
