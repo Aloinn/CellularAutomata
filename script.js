@@ -6,23 +6,42 @@ function generate(){
   CA.run()
 }
 
-
+// LIMITS NUMERIC INPUT BY PUTTING MAX/MIN
 document.getElementById("FLOOD").oninput = function () {
     if (this.value > 50) {
         this.value = 50;
     }
 }
-
 document.getElementById("STEPS").oninput = function () {
     if (this.value > 25) {
         this.value = 25;
     }
 }
 
+function createTable(masses) {
+  var html = "<table>";
+
+
+  for(var i in masses) {
+      html+="<tr>";
+      html+="<td>"+i+"</td>";
+      html+="<td>"+masses[i].type+"</td>";
+      html+="<td>"+masses[i].count+"</td>";
+      html+="<td>"+masses[i].origin+"</td>";
+
+      html+="</tr>";
+  }
+  html+="</table>";
+  document.getElementById("masslist").innerHTML = html;
+}
+
+//Array.prototype.forEach.call(parent.children,
 // BASE STATS
 var radius = 16;
 var height = 25;
 var width = 25;
+
+// RENDERS THE MAP
 function render(){
   var BR = document.getElementById("BR");
   var BL = document.getElementById("BL");
@@ -35,9 +54,11 @@ function render(){
   DL.innerHTML = CA.deathLimit;
   STEPS.innerHTML = CA.step;
   FLOOD.innerHTML = CA.flood;
+
 }
+// COMMAND WHEN PLAYER PRESSES FILL
 function floodFill(){
-  CA.correct(CA.countLands());
+  CA.correct(CA.countLands().sort());
   CA.render();
 }
 
@@ -187,7 +208,7 @@ var CA = {
         }
     }
 
-    copyMap(countMap, this.map);
+    copyMap(countMap, this.map)
 
     // CHECKS IF A TILE IS ADJACENT TO SAID TILE AND ADDS IT TO THE LIST
     function check(coords,type){
@@ -225,7 +246,7 @@ var CA = {
         for(var y = 0; y < height; y++){
             if(countMap[x][y]!==2){
               var type = countMap[x][y];
-              var name = (type === 1?'lake':'island') +"-"+ count.toString();
+              var name = count.toString()+"-"+(type === 1?'L':'W');
 
               masses[name] = new Object();
 
@@ -330,6 +351,7 @@ var CA = {
             this.draw(x,y)
         }
     }
+    createTable(this.countLands());
   },
 
   // RUN ALL PROCESSES
@@ -358,5 +380,5 @@ function copyMap(map1, map2){
 }
 
 // MAIN CODE
-render();
 CA.run();
+render();

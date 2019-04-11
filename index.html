@@ -11,6 +11,8 @@
         font-family: 'Roboto', sans-serif;
       }
     	canvas{
+        width:400px;
+        height:400px;
         background: #eee;
         display: block;
         margin: auto;
@@ -74,16 +76,21 @@
         background-color:tomato;
       }
 
-      .g{background-color:lightslategray}
+      .g{background-color:lightslategray;color:#efefef;}
 
       .w{
         background-color: #efefef;
         color:darkslategray;
       }
 
+      .b{
+        background-color: dodgerBlue;
+      }
       .gy{background-color: mediumseagreen}
+
       h1{
-        font-size:1.6em;
+        font-weight:400;
+        font-size:1.7em;
         padding:5px 0px 5px 0px;
         color:white;
         text-align: center;
@@ -91,6 +98,29 @@
       #tools{
         margin:0px auto;
         width:404px;
+      }
+
+
+      table{
+        margin:auto;
+        width:calc(100% - 3px);
+        border-collapse:collapse;
+        border:none;
+        padding:0px;
+      }
+
+      tr{
+        display:flex;
+        padding:0px;
+        margin:0px;
+      }
+      tr:nth-child(even) {background-color: #efefef;}
+
+      td{
+        text-align: center;
+        border:none;
+        color:lightslategray;
+        flex:1;
       }
 
       @media only screen and (min-width : 800px) {
@@ -104,6 +134,13 @@
           flex:1;
           height:100%;
           margin:30px 30px 30px 15px;
+        }
+      }
+
+      @media only screen and (min-width : 1000px) {
+        #everything{
+          width:1000px;
+          margin:auto;
         }
       }
     </style>
@@ -135,9 +172,24 @@
         <div class = "flex-container big">
           <input class="flex-item w" type="number" id="FLOOD" value="10" maxlength="3"></input>
         </div>
-        <div class = "flex-container">
+        <div class = "flex-container big">
           <a class="flex-item g" href="#" onClick="CA.newCA(); CA.beginCA(); CA.render();">Restart</a>
           <a class="flex-item g" href="#" onClick="CA.stepCA(); CA.render();">Step</a>
+        </div>
+        <div class="flex-container">
+          <p class="flex-item b">List of masses</p>
+        </div>
+        <div class ="flex-container">
+          <table>
+            <tr>
+              <td class="g">NAME</td>
+              <td class="g">TYPE</td>
+              <td class="g">TILES</td>
+              <td class="g">ORIGIN</td>
+            </tr>
+          </table>
+        </div>
+        <div id="masslist">
         </div>
       </div>
     </div>
