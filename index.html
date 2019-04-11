@@ -3,15 +3,144 @@
   <head>
     <meta charset="utf-8">
     <title>Alain's Cellular Automata</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <style>
-    	* { padding: 0; margin: 0; }
-    	canvas { background: #eee; display: block; margin: 40px auto; }
+      *{
+        color:#efefef;
+        margin:0px;
+        font-family: 'Roboto', sans-serif;
+      }
+    	canvas{
+        background: #eee;
+        display: block;
+        margin: auto;
+        margin-top:30px;
+        margin-bottom:20px;
+      }
+      .flex-container{
+        width:100%;;
+        padding: 0;
+        margin: 0px auto;
+        list-style: none;
+        height:100%;
+
+        -ms-box-orient: horizontal;
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -moz-flex;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-justify-content: space-around;
+        justify-content: space-between;
+        -webkit-flex-flow: row wrap;
+        flex-flow: row wrap;
+        -webkit-align-items: stretch;
+        align-items: stretch;
+      }
+
+      .big{
+        margin-bottom:10px;
+      }
+      .flex-item {
+        margin:2px;
+        text-decoration:none;
+        flex:1;
+        background: #efefef;
+        padding: 5px;
+        height:auto;
+        text-transform: capitalize;
+        color: white;
+        font-size: 1.4em;
+        letter-spacing: -1px;
+        text-align: center;
+      }
+      input[type=number] {
+        width: 100%;
+        border:none;
+        text-transform: none;
+      }
+
+      .tr{
+        padding-left:10px;
+        text-align: left;
+      }
+
+      .flex-item.sign{
+        font-size:1em;
+      }
+
+      .r{
+        background-color:tomato;
+      }
+
+      .g{background-color:lightslategray}
+
+      .w{
+        background-color: #efefef;
+        color:darkslategray;
+      }
+
+      .gy{background-color: mediumseagreen}
+      h1{
+        font-size:1.6em;
+        padding:5px 0px 5px 0px;
+        color:white;
+        text-align: center;
+      }
+      #tools{
+        margin:0px auto;
+        width:404px;
+      }
+
+      @media only screen and (min-width : 800px) {
+        #everything{
+          display:flex;
+        }
+        #myCanvas{
+          margin:30px 15px 30px 30px;
+        }
+        #tools{
+          flex:1;
+          height:100%;
+          margin:30px 30px 30px 15px;
+        }
+      }
     </style>
   </head>
   <body>
-    <canvas id="myCanvas" width ="400" height="400">
-    </canvas>
-
+    <h1 class="g"> Cellular Automata Island Generator</h1>
+    <div id="everything">
+      <canvas id="myCanvas" width ="400" height="400">
+      </canvas>
+      <div id="tools">
+        <div class = "flex-container big">
+          <a class="flex-item r" href="#" onClick="generate()">Generate!</a>
+        </div>
+        <div class = "flex-container">
+          <p class="flex-item sign g">Birth Rate</p>
+          <p class="flex-item sign g">Birth Limit</p>
+          <p class="flex-item sign g">Death Limit</p>
+          <p class="flex-item sign g">Steps</p>
+        </div>
+        <div class = "flex-container big">
+          <a class="flex-item w tr" href="#" id="BR" onClick="CA.changeInput(0)">1</a>
+          <a class="flex-item w tr" href="#" id="BL" onClick="CA.changeInput(1)">1</a>
+          <a class="flex-item w tr" href="#" id="DL" onClick="CA.changeInput(2)">1</a>
+          <input class="flex-item w tr" type="number" id="STEPS" value="10" maxlength="3"></input>
+        </div>
+        <div class = "flex-container">
+          <a class="flex-item gy" href="#" onClick="floodFill()">Flood fill</a>
+        </div>
+        <div class = "flex-container big">
+          <input class="flex-item w" type="number" id="FLOOD" value="10" maxlength="3"></input>
+        </div>
+        <div class = "flex-container">
+          <a class="flex-item g" href="#" onClick="CA.newCA(); CA.beginCA(); CA.render();">Restart</a>
+          <a class="flex-item g" href="#" onClick="CA.stepCA(); CA.render();">Step</a>
+        </div>
+      </div>
+    </div>
     <script src = "script.js">
     </script>
   </body>

@@ -1,32 +1,82 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
-document.addEventListener("click",click);
+//document.addEventListener("click",click);
+function generate(){
+  CA.run()
+}
 
-function click(){
-  CA.newCA();
-  CA.beginCA();
-  for(var i = 0; i < 10; i++){
-    CA.stepCA();
-  }
-  CA.countLands();
-  CA.correct(CA.masses);
-  render();
+
+document.getElementById("FLOOD").oninput = function () {
+    if (this.value > 50) {
+        this.value = 50;
+    }
+}
+
+document.getElementById("STEPS").oninput = function () {
+    if (this.value > 25) {
+        this.value = 25;
+    }
 }
 
 // BASE STATS
 var radius = 16;
 var height = 25;
 var width = 25;
+function render(){
+  var BR = document.getElementById("BR");
+  var BL = document.getElementById("BL");
+  var DL = document.getElementById("DL");
+  var STEPS = document.getElementById("STEPS");
+  var FLOOD = document.getElementById("FLOOD");
+
+  BR.innerHTML = CA.birth;
+  BL.innerHTML = CA.birthLimit;
+  DL.innerHTML = CA.deathLimit;
+  STEPS.innerHTML = CA.step;
+  FLOOD.innerHTML = CA.flood;
+}
+function floodFill(){
+  CA.correct(CA.countLands());
+  CA.render();
+}
 
 var CA = {
   // RANDOM STATS
   birth:4, // 1 in how many chance to be born
   birthLimit:4, // neighbours required to live
   deathLimit:3, // neighbours required to be reborn
+
+  // CHANGE VALUES
+  changeInput(i){
+    switch(i){
+      case 0: //BIRTH RATE
+        if(this.birth===9)
+        {this.birth = 0;}
+        else
+        {this.birth +=1;}
+        break;
+      case 1: //BIRTH LIMIT
+        if(this.birthLimit===9)
+        {this.birthLimit = 0;}
+        else
+        {this.birthLimit +=1;}
+        break;
+      case 2: //DEATH LIMIT
+        if(this.deathLimit===9)
+        {this.deathLimit = 0;}
+        else
+        {this.deathLimit +=1;}
+        break;
+    }
+    render();
+
+  },
+
   // MAP
   map:[],
   newmap:[],
+
   // CREATE MAP
   newCA(){
     // CREATE MAP
@@ -58,7 +108,7 @@ var CA = {
   stepCA(){
     for(var x = 0; x < width; x++){
       for(var y = 0; y < height; y++){
-        var nbs = countNeighbours(this.map,x,y)
+        var nbs = this.countNeighbours(this.map,x,y)
 
         // IF ALIVE WITH TOO FEW NEIGHBOURS, THEN KILL CELL
         if(this.map[x][y] === 1){
@@ -187,16 +237,42 @@ var CA = {
             }
         }
     }
-    this.masses = masses;
+    return masses;
+  },
+
+  // function to count neighbours of a coordinate
+  countNeighbours(map,x,y){
+    // COUNTS HOW MANY NEIGHBOURS
+    var count = 0;
+    for(var xx = -1; xx < 2; xx +=1){
+      for(var yy = -1; yy < 2; yy +=1){
+        // COORDINATE OF NEIGHBOURS
+        var nx = x + xx;
+        var ny = y + yy;
+        // DO NOTHING BECAUSE THIS IS OUR TILE
+        if( xx === 0 && yy === 0){}
+        // ADD TO NEIGHBOUR IF TILE IS NEAR EDGE OF MAP
+        else if(nx < 0 || ny < 0 || nx >= width || ny >= height){
+          count ++;
+        }
+        // OTHERWISE DO A NORMAL CHECK FOR NEIGHBOUR
+        else if(map[nx][ny]===1){
+          count ++;
+        }
+      }
+    }
+
+    // ONCE THE COUNT IS DONE RETURN THE NUMBER OF NEIGHBOURS
+    return count;
   },
 
   // FILL IN SMALL BODIES
   correct(masses){
-    console.table(masses);
     var count = Object.keys(masses).length;
     for(var mass in masses){
-      if(masses[mass].type === 'lake' && masses[mass].count < 20)
-      {this.floodFill(masses[mass].origin); console.log('fill!')}
+      if(masses[mass].type === 'lake' && masses[mass].count < parseInt(document.getElementById("FLOOD").value)+1)
+      {this.floodFill(masses[mass].origin);}
+      console.log(document.getElementById("FLOOD").value+1)
     }
   },
 
@@ -246,40 +322,24 @@ var CA = {
     {ctx.fillStyle = 'limegreen';}
     ctx.fillRect(x*radius, y*radius,  radius-1, radius-1);
   },
-}
 
-// function to count neighbours of a coordinate
-function countNeighbours(map,x,y){
-  // COUNTS HOW MANY NEIGHBOURS
-  var count = 0;
-  for(var xx = -1; xx < 2; xx +=1){
-    for(var yy = -1; yy < 2; yy +=1){
-      // COORDINATE OF NEIGHBOURS
-      var nx = x + xx;
-      var ny = y + yy;
-      // DO NOTHING BECAUSE THIS IS OUR TILE
-      if( xx === 0 && yy === 0){}
-      // ADD TO NEIGHBOUR IF TILE IS NEAR EDGE OF MAP
-      else if(nx < 0 || ny < 0 || nx >= width || ny >= height){
-        count ++;
-      }
-      // OTHERWISE DO A NORMAL CHECK FOR NEIGHBOUR
-      else if(map[nx][ny]===1){
-        count ++;
-      }
+  // RENDER THE MAP 2D ARRAY
+  render(){
+    for(var x = 0; x < width; x++){
+        for(var y = 0; y < height; y++){
+            this.draw(x,y)
+        }
     }
-  }
+  },
 
-  // ONCE THE COUNT IS DONE RETURN THE NUMBER OF NEIGHBOURS
-  return count;
-}
-
-// RENDER THE MAP 2D ARRAY
-function render(){
-  for(var x = 0; x < width; x++){
-      for(var y = 0; y < height; y++){
-          CA.draw(x,y)
-      }
+  // RUN ALL PROCESSES
+  run(){
+    this.newCA();
+    this.beginCA();
+    for(var i = 0; i < document.getElementById("STEPS").value; i++){
+      this.stepCA();
+    }
+    this.render();
   }
 }
 
@@ -298,6 +358,5 @@ function copyMap(map1, map2){
 }
 
 // MAIN CODE
-CA.newCA();
-CA.beginCA();
 render();
+CA.run();
