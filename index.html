@@ -17,7 +17,7 @@
         display: block;
         margin: auto;
         margin-top:30px;
-        margin-bottom:20px;
+        margin-bottom:5px;
       }
       .flex-container{
         width:100%;;
@@ -123,12 +123,20 @@
         flex:1;
       }
 
+      #SIZE{
+        width:400px;
+      }
+
       @media only screen and (min-width : 800px) {
         #everything{
           display:flex;
         }
+        #SIZE{
+          margin:0px 15px 30px 30px;
+          height:auto;
+        }
         #myCanvas{
-          margin:30px 15px 30px 30px;
+          margin:30px 15px 5px 30px;
         }
         #tools{
           flex:1;
@@ -148,8 +156,18 @@
   <body>
     <h1 class="g"> Cellular Automata Island Generator</h1>
     <div id="everything">
+
+      <div id="LEFT">
       <canvas id="myCanvas" width ="400" height="400">
       </canvas>
+
+      <div class="flex-container" id="SIZE">
+        <a class="flex-item g" href="#" onClick="small(); CA.run();">Small</a>
+        <a class="flex-item g" href="#" onClick="big(); CA.run();">Big</a>
+        <a class="flex-item g" href="#" onClick="huge(); CA.run();">huge</a>
+      </div>
+      </div>
+
       <div id="tools">
         <div class = "flex-container big">
           <a class="flex-item r" href="#" onClick="generate()">Generate!</a>

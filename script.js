@@ -8,8 +8,8 @@ function generate(){
 
 // LIMITS NUMERIC INPUT BY PUTTING MAX/MIN
 document.getElementById("FLOOD").oninput = function () {
-    if (this.value > 50) {
-        this.value = 50;
+    if (this.value > 150) {
+        this.value = 150;
     }
 }
 document.getElementById("STEPS").oninput = function () {
@@ -18,6 +18,7 @@ document.getElementById("STEPS").oninput = function () {
     }
 }
 
+// CREATE A TABLE
 function createTable(masses) {
   var html = "<table>";
 
@@ -35,11 +36,29 @@ function createTable(masses) {
   document.getElementById("masslist").innerHTML = html;
 }
 
-//Array.prototype.forEach.call(parent.children,
 // BASE STATS
-var radius = 16;
-var height = 25;
-var width = 25;
+var radius = 8;
+var height = 50;
+var width = 50;
+
+// CHANGE SIZES OF MAP
+function big(){
+  radius = 8;
+  height = 50;
+  width = 50;
+}
+
+function small(){
+  radius = 16;
+  height = 25;
+  width = 25;
+}
+
+function huge(){
+  radius = 4;
+  height = 100;
+  width = 100;
+}
 
 // RENDERS THE MAP
 function render(){
@@ -346,6 +365,7 @@ var CA = {
 
   // RENDER THE MAP 2D ARRAY
   render(){
+    ctx.clearRect(0,0,400,400);
     for(var x = 0; x < width; x++){
         for(var y = 0; y < height; y++){
             this.draw(x,y)
