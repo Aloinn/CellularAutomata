@@ -58,7 +58,7 @@ function render(){
 }
 // COMMAND WHEN PLAYER PRESSES FILL
 function floodFill(){
-  CA.correct(CA.countLands().sort());
+  CA.correct(CA.countLands());
   CA.render();
 }
 
