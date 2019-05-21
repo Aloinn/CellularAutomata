@@ -38,8 +38,8 @@ function createTable(masses) {
 
 // BASE STATS
 var radius = 8;
-var height = 50;
-var width = 50;
+var height = 25;
+var width = 25;
 
 // CHANGE SIZES OF MAP
 function big(){
