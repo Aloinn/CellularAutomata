@@ -37,7 +37,7 @@ function createTable(masses) {
 }
 
 // BASE STATS
-var radius = 8;
+var radius = 16;
 var height = 25;
 var width = 25;
 
